@@ -20,6 +20,13 @@ binance_future = ccxt.binance(config={
     }
 })
 
+leverage = 2
+
+resp = binance_future.fapiPrivate_post_leverage({
+    'symbol': 'BTCUSDT',
+    'leverage': leverage
+})
+
 # 변동성 돌파 전략 target price 구하기
 def get_target_price(binance_future):
     # 선물 과거 데이터
@@ -36,7 +43,7 @@ def get_target_price(binance_future):
     target_price = df.iloc[-1, 0] + volatility  # (today Open) + volatility
     return target_price
 
-# 선물 매수 주문하기
+# 선물 매수 주문 및 롱 포지션 진입
 def buy_crypto_currency(binance_future, current_price):
     # 현재 USDT 보유량
     balance_future = binance_future.fetch_balance()
@@ -44,20 +51,36 @@ def buy_crypto_currency(binance_future, current_price):
     unit = (USDT_free * 0.5) / current_price
 
     # market price로 진입
-    order = binance_future.create_order(
+    order = binance_future.create_market_buy_order(
         symbol="BTC/USDT",
-        type="MARKET",
-        side="buy",
         amount=unit
     )
+    print("==== Buy ORDER ====")
+    pprint(order)
 
-    print("ORDER: ", order)
-
-# 선물 매도 주문하기
+# 선물 매도 주문 및 롱 포지션 정리
 def sell_crypto_current(binance_future):
     balance_future = binance_future.fetch_balance()
-    print(balance_future)
+    BTC_position = balance_future['info']['positions']
 
+    for position in BTC_position:
+        if position["symbol"] == "BTCUSDT":
+            pprint(position)
+            positionAmt = position["positionAmt"]
+    
+    order = binance_future.create_market_sell_order(
+        symbol="BTC/USDT",
+        amount=positionAmt
+    )
+
+    print("==== Sell ORDER ====")
+    pprint(order)
+
+    
+
+# current_btc =  binance_future.fetch_ticker("BTC/USDT")
+# current_price = current_btc["close"]
+# buy_crypto_currency(binance_future, current_price)
 sell_crypto_current(binance_future)
 
 
