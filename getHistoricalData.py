@@ -39,7 +39,7 @@ from_ts = binance_future.parse8601('2022-02-01 00:00:00')
 
 btc = binance_future.fetch_ohlcv(
     symbol="BTC/USDT", 
-    timeframe='1d', 
+    timeframe='5m', 
     since= from_ts)
 
 # 선물 현재가
@@ -51,7 +51,8 @@ df = pd.DataFrame(btc, columns=['Datetime', 'Open', 'High', 'Low', 'Close', 'Vol
 df['Datetime'] = pd.to_datetime(df['Datetime'], unit='ms')
 df.set_index('Datetime', inplace=True)
 
-df.to_csv(r'HistoricalData/binance_future_since_20220201.csv')
+
+# df.to_csv(r'HistoricalData/binance_future_since_20220201.csv')
 
 
 
