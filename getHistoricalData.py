@@ -48,7 +48,7 @@ btc = binance_future.fetch_ohlcv(
 
 # 선물 과거 데이터
 df = pd.DataFrame(btc, columns=['Datetime', 'Open', 'High', 'Low', 'Close', 'Volume'])
-df['Datetime'] = pd.to_datetime(df['Datetime'], unit='ms')
+df['Datetime'] = pd.to_datetime(df['Datetime'], utc=True, unit='ms')
 df.set_index('Datetime', inplace=True)
 
 
